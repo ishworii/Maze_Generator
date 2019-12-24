@@ -1,7 +1,7 @@
-var cols, rows;
-var w = 40;
-var grid = [];
-var current ;
+let cols, rows;
+let w = 20;
+let grid = [];
+let current ;
 
 function index(i,j)
 {
@@ -13,14 +13,14 @@ function index(i,j)
 }
 
 function setup() {
-  createCanvas(400, 400);
-  frameRate(5);
+  createCanvas(720, 560);
+  //frameRate(5);
   cols = floor(width / w);
   rows = floor(height / w);
 
-  for (var x = 0; x < rows; x++) {
-    for (var y = 0; y < cols; y++) {
-      cell = new Cell(x, y);
+  for (let j = 0; j < rows; j++) {
+    for (let i = 0; i < cols; i++) {
+      cell = new Cell(i, j);
       grid.push(cell);
     }
   }
@@ -29,16 +29,23 @@ function setup() {
 
 function draw() {
   background(51);
-  for (var i = 0; i<grid.length;i++){
+  for (let i = 0; i<grid.length;i++){
     grid[i].show();
     }
     current.visited  = true;
-    var next = current.checkNeighbors();
+    current.highlight();
+    // STEP 1
+    let next = current.checkNeighbors();
     if (next)
     {
         next.visited = true;
-        current = next;
+        // STEP 3
+        removeWalls(current,next);
+
     }
+    // STEP 4
+    console.log(current);
+    current = next;
 }
 
 function Cell(i, j) {
@@ -47,14 +54,23 @@ function Cell(i, j) {
   this.visited = false;
   this.walls = [true,true,true,true];
 
+  this.highlight = function()
+  {
+    x = this.i*w;
+    y = this.j *w;
+    noStroke();
+    fill(0,255,0,100);
+    rect(x,y,w,w);
+  }
+
   this.checkNeighbors = function()
   {
-    var neightbors = [];
+    let neightbors = [];
 
-    var top    = grid[index(i,j-1)];
-    var right  = grid[index(i+1,j)];
-    var bottom = grid[index(i,j+1)];
-    var left   = grid[index(i-1,j)];
+    let top    = grid[index(i,j-1)];
+    let right  = grid[index(i+1,j)];
+    let bottom = grid[index(i,j+1)];
+    let left   = grid[index(i-1,j)];
 
     if(top && !top.visited)
     {
@@ -75,7 +91,7 @@ function Cell(i, j) {
 
     if (neightbors.length > 0 )
     {
-        r = floor(random(1,neightbors.length));
+        r = floor(random(0,neightbors.length));
         return neightbors[r];
     }
     else
@@ -88,6 +104,7 @@ function Cell(i, j) {
   {
     x = this.i*w;
     y = this.j *w;
+    stroke(255);
     if (this.walls[0])
     {
       line(x,y,x+w,y);
@@ -106,10 +123,31 @@ function Cell(i, j) {
     }
     if (this.visited)
     {
+        noStroke();
         fill(255,0,255,100);
         rect(x,y,w,w);
     }
 
   }
 
+}
+
+
+function removeWalls(a, b) {
+  let x = a.i - b.i;
+  if (x === 1) {
+    a.walls[3] = false;
+    b.walls[1] = false;
+  } else if (x === -1) {
+    a.walls[1] = false;
+    b.walls[3] = false;
+  }
+  let y = a.j - b.j;
+  if (y === 1) {
+    a.walls[0] = false;
+    b.walls[2] = false;
+  } else if (y === -1) {
+    a.walls[2] = false;
+    b.walls[0] = false;
+  }
 }
