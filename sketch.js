@@ -1,6 +1,7 @@
 let cols, rows;
 let w = 20;
 let grid = [];
+let stack = [];
 let current ;
 
 function index(i,j)
@@ -13,7 +14,7 @@ function index(i,j)
 }
 
 function setup() {
-  createCanvas(720, 560);
+  createCanvas(800, 580);
   //frameRate(5);
   cols = floor(width / w);
   rows = floor(height / w);
@@ -39,13 +40,20 @@ function draw() {
     if (next)
     {
         next.visited = true;
+        //STEP 2
+        stack.push(current);
+
         // STEP 3
         removeWalls(current,next);
 
-    }
+
     // STEP 4
-    console.log(current);
     current = next;
+    }
+    else if (stack.length > 0)
+    {
+        current = stack.pop();
+    }
 }
 
 function Cell(i, j) {
@@ -121,12 +129,12 @@ function Cell(i, j) {
     {
        line(x,y+w,x,y);
     }
-    if (this.visited)
-    {
-        noStroke();
-        fill(255,0,255,100);
-        rect(x,y,w,w);
-    }
+    // if (this.visited)
+    // {
+    //     noStroke();
+    //     fill(255,0,255,100);
+    //     rect(x,y,w,w);
+    // }
 
   }
 
